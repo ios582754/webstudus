@@ -2,9 +2,9 @@
 requires = ["python-3.12"]
 
 [dev]
-build = ["pip3", "install", "-r", "requirements.txt"]
-run = ["bash", "start.sh"]
+build = ["bash", "-c", "pip3 install -r requirements.txt"]
+run = ["./start.sh"]
 
 [deploy]
 build = ["bash", "-c", "pip3 install -r requirements.txt && cd apps/dsa-web && pnpm install && pnpm run build"]
-run = ["bash", "start.sh"]
+run = ["./start.sh"]
