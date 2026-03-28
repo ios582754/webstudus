@@ -27,9 +27,16 @@ def main() -> int:
     """
     启动 Web 服务
     """
-    # 兼容旧版环境变量名
-    host = os.getenv("WEBUI_HOST", os.getenv("API_HOST", "127.0.0.1"))
-    port = int(os.getenv("WEBUI_PORT", os.getenv("API_PORT", "8000")))
+    # 检测是否在 FaaS 环境中（通过 DEPLOY_RUN_PORT 环境变量）
+    faas_port = os.getenv("DEPLOY_RUN_PORT")
+    
+    # 兼容旧版环境变量名，FaaS 环境默认使用 5000 端口
+    if faas_port:
+        host = os.getenv("WEBUI_HOST", os.getenv("API_HOST", "0.0.0.0"))
+        port = int(os.getenv("WEBUI_PORT", os.getenv("API_PORT", faas_port)))
+    else:
+        host = os.getenv("WEBUI_HOST", os.getenv("API_HOST", "127.0.0.1"))
+        port = int(os.getenv("WEBUI_PORT", os.getenv("API_PORT", "8000")))
 
     print(f"正在启动 Web 服务: http://{host}:{port}")
     print(f"API 文档: http://{host}:{port}/docs")
