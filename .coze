@@ -3,8 +3,8 @@ requires = ["python-3.12"]
 
 [dev]
 build = ["bash", "-c", "pip3 install -r requirements.txt"]
-run = ["./start.sh"]
+run = ["bash", "-c", "chmod +x start.sh && ./start.sh"]
 
 [deploy]
 build = ["bash", "-c", "pip3 install -r requirements.txt && cd apps/dsa-web && pnpm install && pnpm run build"]
-run = ["./start.sh"]
+run = ["bash", "-c", "chmod +x start.sh && exec ./start.sh"]
