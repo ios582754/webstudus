@@ -283,57 +283,54 @@ LITELLM_MODEL=openai/deepseek-chat
 
 #### 环境要求
 
-- Python 3.11+ 或 3.12
+- Python 3.8+（推荐 3.11 或 3.12）
 - 内存：至少 2GB（推荐 4GB）
-- 系统：Ubuntu 20.04+ / CentOS 7+
+- 系统：Ubuntu 18.04+ / CentOS 7+
 
-#### 一键安装脚本
+#### 一键安装（推荐）
 
 在宝塔 SSH 终端执行：
 
 ```bash
-# Ubuntu/Debian
-apt update && apt install -y git python3.12 python3.12-venv python3.12-dev python3-pip
+# 下载并运行安装脚本
+wget -O install.sh https://raw.githubusercontent.com/ios582754/webstudus/main/install.sh
+chmod +x install.sh
+./install.sh
+```
 
-# 或者 CentOS
-yum install -y git python3.12 python3.12-pip
+如果上面的命令无法下载，直接复制以下脚本执行：
 
-# 克隆代码
-mkdir -p /www/wwwroot/daily-stock-analysis
+```bash
+# 完整一键安装脚本
+rm -rf /www/wwwroot/daily-stock-analysis
+mkdir -p /www/wwwroot
 cd /www/wwwroot
-git clone https://github.com/ios582754/webstudus.git daily-stock-analysis
+
+# 克隆代码（失败则下载 ZIP）
+git clone https://github.com/ios582754/webstudus.git daily-stock-analysis || {
+    wget -O main.zip "https://ghproxy.com/https://github.com/ios582754/webstudus/archive/refs/heads/main.zip"
+    unzip -o main.zip && mv webstudus-main daily-stock-analysis && rm -f main.zip
+}
+
+cd /www/wwwroot/daily-stock-analysis
 
 # 创建虚拟环境并安装依赖
-cd /www/wwwroot/daily-stock-analysis
-python3.12 -m venv venv
+python3 -m venv venv
 source venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install --upgrade pip -q
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple -q
 
 # 创建配置文件
 cat > .env << 'EOF'
-# AI 模型（必需）
-DEEPSEEK_API_KEY=sk-你的key
-
-# 搜索引擎（必需）
-TAVILY_API_KEYS=tvly-你的key
-
-# 股票列表
+DEEPSEEK_API_KEY=sk-dad0a23941d247169412403435bd2642
+TAVILY_API_KEYS=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
 STOCK_LIST=600519,300750,002594
-
-# Web 配置
 WEBUI_HOST=127.0.0.1
 WEBUI_PORT=5000
 EOF
 
 echo "安装完成！"
 ```
-
-> **注意**：CentOS 可能没有 Python 3.12，可以使用 `python3` 或先安装：
-> ```bash
-> yum install -y epel-release
-> yum install -y python3 python3-pip
-> ```
 
 #### 配置 Supervisor 进程守护
 
