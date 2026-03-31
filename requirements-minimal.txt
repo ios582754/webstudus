@@ -1,0 +1,31 @@
+# 最小化依赖 - 仅 API 服务必需
+# 用于 FaaS 快速启动
+
+# 核心依赖
+python-dotenv>=1.0.0
+tenacity>=8.2.0
+sqlalchemy>=2.0.0
+
+# 数据源（最小集）
+efinance>=0.5.5
+akshare>=1.12.0
+pandas>=2.0.0
+numpy>=1.24.0
+
+# AI 分析
+litellm>=1.80.10,<1.82.7
+tiktoken>=0.8.0,<0.12.0
+openai>=1.0.0
+PyYAML>=6.0
+
+# 搜索引擎
+tavily-python>=0.3.0
+
+# 网络请求
+requests>=2.31.0
+httpx[socks]
+
+# Web 框架
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.6
