@@ -3,8 +3,8 @@ requires = ["python-3.12"]
 
 [dev]
 build = ["bash", "-c", "pip3 install -r requirements.txt"]
-run = ["bash", "start.sh"]
+run = ["python3", "start_faas.py"]
 
 [deploy]
 build = ["bash", "-c", "pip3 install -r requirements.txt"]
-run = ["bash", "start.sh"]
+run = ["python3", "start_faas.py"]
