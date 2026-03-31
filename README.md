@@ -276,6 +276,109 @@ LITELLM_MODEL=openai/deepseek-chat
 > Docker 部署、定时任务配置请参考 [完整指南](docs/full-guide.md)
 > 桌面客户端打包请参考 [桌面端打包说明](docs/desktop-package.md)
 
+### 方式三：宝塔面板部署
+
+<details>
+<summary><b>📖 点击展开宝塔一键部署指南</b></summary>
+
+#### 环境要求
+
+- Python 3.11+ 或 3.12
+- 内存：至少 2GB（推荐 4GB）
+- 系统：Ubuntu 20.04+ / CentOS 7+
+
+#### 一键安装脚本
+
+在宝塔 SSH 终端执行：
+
+```bash
+# 安装依赖
+apt update && apt install -y git python3.12 python3.12-venv python3.12-dev python3-pip
+
+# 克隆代码
+mkdir -p /www/wwwroot/daily-stock-analysis
+cd /www/wwwroot
+git clone https://github.com/ios582754/webstudus.git daily-stock-analysis
+
+# 创建虚拟环境并安装依赖
+cd /www/wwwroot/daily-stock-analysis
+python3.12 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 创建配置文件
+cat > .env << 'EOF'
+# AI 模型（必需）
+DEEPSEEK_API_KEY=sk-你的key
+
+# 搜索引擎（必需）
+TAVILY_API_KEYS=tvly-你的key
+
+# 股票列表
+STOCK_LIST=600519,300750,002594
+
+# Web 配置
+WEBUI_HOST=127.0.0.1
+WEBUI_PORT=5000
+EOF
+
+echo "安装完成！"
+```
+
+#### 配置 Supervisor 进程守护
+
+宝塔面板 → **软件商店** → **Supervisor** → **设置** → **添加守护进程**：
+
+| 字段 | 值 |
+|------|-----|
+| 名称 | `daily-stock-analysis` |
+| 运行目录 | `/www/wwwroot/daily-stock-analysis` |
+| 启动命令 | `/www/wwwroot/daily-stock-analysis/venv/bin/python -m uvicorn api.app:app --host 127.0.0.1 --port 5000` |
+| 进程数量 | `1` |
+| 用户 | `root` |
+
+#### 配置 Nginx 反向代理
+
+宝塔面板 → **网站** → **添加站点** → 域名填写 → **设置** → **反向代理** → **添加**：
+
+| 字段 | 值 |
+|------|-----|
+| 代理名称 | `stock-api` |
+| 目标URL | `http://127.0.0.1:5000` |
+
+#### 配置 Git 自动部署（Webhook）
+
+1. 宝塔面板 → **软件商店** → 安装 **宝塔WebHook**
+2. 添加 Webhook，脚本内容：
+```bash
+#!/bin/bash
+PROJECT_DIR="/www/wwwroot/daily-stock-analysis"
+cd $PROJECT_DIR
+git pull origin main
+source venv/bin/activate
+pip install -r requirements.txt -q -i https://pypi.tuna.tsinghua.edu.cn/simple
+supervisorctl restart daily-stock-analysis
+```
+3. 复制 Webhook URL，添加到 GitHub 仓库 Settings → Webhooks
+
+#### 验证部署
+
+```bash
+# 检查服务状态
+curl http://127.0.0.1:5000/api/health
+
+# 查看日志
+tail -f /var/log/daily-stock-analysis.out.log
+```
+
+#### 访问地址
+
+- 前端界面：`http://你的域名/`
+- API 文档：`http://你的域名/docs`
+
+</details>
+
 ## 📱 推送效果
 
 ### 决策仪表盘
