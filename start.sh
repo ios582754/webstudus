@@ -1,10 +1,8 @@
 #!/bin/bash
-# 启动 Web 服务
+# FaaS 启动脚本
 
-export WEBUI_HOST=0.0.0.0
-export WEBUI_PORT=5000
-export API_HOST=0.0.0.0
-export API_PORT=5000
-export CORS_ALLOW_ALL=true
+# 设置工作目录
+cd "${COZE_WORKSPACE_PATH:-/workspace/projects}"
 
-exec python3 webui.py
+# 启动服务
+exec python3 -m uvicorn api.app:app --host 0.0.0.0 --port "${DEPLOY_RUN_PORT:-5000}"
