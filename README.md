@@ -292,8 +292,11 @@ LITELLM_MODEL=openai/deepseek-chat
 在宝塔 SSH 终端执行：
 
 ```bash
-# 安装依赖
+# Ubuntu/Debian
 apt update && apt install -y git python3.12 python3.12-venv python3.12-dev python3-pip
+
+# 或者 CentOS
+yum install -y git python3.12 python3.12-pip
 
 # 克隆代码
 mkdir -p /www/wwwroot/daily-stock-analysis
@@ -325,6 +328,12 @@ EOF
 
 echo "安装完成！"
 ```
+
+> **注意**：CentOS 可能没有 Python 3.12，可以使用 `python3` 或先安装：
+> ```bash
+> yum install -y epel-release
+> yum install -y python3 python3-pip
+> ```
 
 #### 配置 Supervisor 进程守护
 
