@@ -1,19 +1,21 @@
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
-import { Check, Monitor, Moon, Sun } from 'lucide-react';
+import { Check, Monitor, Moon, Sun, Palette } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '../../utils/cn';
 
-type ThemeOption = 'light' | 'dark' | 'system';
+type ThemeOption = 'light' | 'dark' | 'red' | 'system';
 type ThemeToggleVariant = 'default' | 'nav';
 
 const THEME_OPTIONS: Array<{
   value: ThemeOption;
   label: string;
   icon: typeof Sun;
+  color?: string;
 }> = [
   { value: 'light', label: '浅色', icon: Sun },
   { value: 'dark', label: '深色', icon: Moon },
+  { value: 'red', label: '红色', icon: Palette, color: '#ef4444' },
   { value: 'system', label: '跟随系统', icon: Monitor },
 ];
 
@@ -23,6 +25,8 @@ function resolveThemeLabel(theme: string | undefined) {
       return '浅色';
     case 'dark':
       return '深色';
+    case 'red':
+      return '红色';
     default:
       return '跟随系统';
   }
@@ -60,7 +64,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
 
   const activeTheme = (theme as ThemeOption | undefined) ?? 'system';
   const visualTheme = resolvedTheme ?? 'dark';
-  const TriggerIcon = visualTheme === 'light' ? Sun : Moon;
+  const TriggerIcon = visualTheme === 'light' ? Sun : activeTheme === 'red' ? Palette : Moon;
   const isNavVariant = variant === 'nav';
 
   return (
@@ -79,7 +83,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         aria-expanded={open}
         aria-label="切换主题"
       >
-        <TriggerIcon className={cn('shrink-0', isNavVariant ? 'h-5 w-5' : 'h-4 w-4')} />
+        <TriggerIcon 
+          className={cn('shrink-0', isNavVariant ? 'h-5 w-5' : 'h-4 w-4')} 
+          style={activeTheme === 'red' ? { color: '#ef4444' } : undefined}
+        />
         {isNavVariant ? (
           collapsed ? null : <span className="truncate text-[1.02rem] font-medium">主题</span>
         ) : (
@@ -98,7 +105,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
               : 'absolute right-0 mt-2'
           )}
         >
-          {THEME_OPTIONS.map(({ value, label, icon: Icon }) => {
+          {THEME_OPTIONS.map(({ value, label, icon: Icon, color }) => {
             const isActive = activeTheme === value;
             return (
               <button
@@ -118,10 +125,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                 )}
               >
                 <span className="flex items-center gap-2">
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-4 w-4" style={color ? { color } : undefined} />
                   {label}
                 </span>
-                {isActive ? <Check className="h-4 w-4 text-cyan" /> : null}
+                {isActive ? <Check className="h-4 w-4 text-cyan" style={color ? { color } : undefined} /> : null}
               </button>
             );
           })}
